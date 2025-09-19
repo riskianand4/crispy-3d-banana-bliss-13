@@ -17,29 +17,25 @@ import {
   WifiOff
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { usePSBData } from '@/hooks/usePSBData';
+import { usePSBAnalytics } from '@/hooks/usePSBAnalytics';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--accent))', 'hsl(var(--muted))'];
 
 export const PSBDashboard: React.FC = () => {
-  const { analytics, loading, error, fetchAnalytics } = usePSBData();
+  const { analytics, loading, error, refreshAnalytics } = usePSBAnalytics();
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'checking'>('checking');
 
   useEffect(() => {
-    // Check connection status and fetch analytics
-    const initializeData = async () => {
+    // Check connection status
+    if (analytics) {
+      setConnectionStatus('connected');
+    } else if (error) {
+      setConnectionStatus('disconnected');  
+    } else {
       setConnectionStatus('checking');
-      try {
-        await fetchAnalytics();
-        setConnectionStatus('connected');
-      } catch (error) {
-        setConnectionStatus('disconnected');
-      }
-    };
-    
-    initializeData();
-  }, [fetchAnalytics]);
+    }
+  }, [analytics, error]);
 
   if (loading) {
     return (
@@ -158,7 +154,7 @@ export const PSBDashboard: React.FC = () => {
           <p className="text-sm text-muted-foreground mb-6">
             Periksa apakah backend server berjalan di port 3001 dan endpoint /api/psb-orders dapat diakses
           </p>
-          <Button onClick={fetchAnalytics} className="mt-4">
+          <Button onClick={refreshAnalytics} className="mt-4">
             <RefreshCw className="h-4 w-4 mr-2" />
             Coba Lagi
           </Button>
@@ -183,7 +179,7 @@ export const PSBDashboard: React.FC = () => {
             Monitoring dan analisis data PSB secara real-time
           </p>
         </div>
-        <Button onClick={fetchAnalytics} variant="outline">
+        <Button onClick={refreshAnalytics} variant="outline">
           <RefreshCw className="h-4 w-4 mr-2" />
           Refresh
         </Button>

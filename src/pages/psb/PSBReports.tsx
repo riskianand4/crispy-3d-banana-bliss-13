@@ -9,9 +9,7 @@ import { FileText, Download, Calendar, Filter, TrendingUp, BarChart3, PieChart, 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePickerWithRange } from '@/components/ui/date-range-picker';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line, AreaChart, Area } from 'recharts';
-import { psbApi } from '@/services/psbApi';
-import { PSBAnalytics } from '@/types/psb';
-import { toast } from 'sonner';
+import { usePSBAnalytics } from '@/hooks/usePSBAnalytics';
 const reportTypes = [{
   id: 'summary',
   title: 'Laporan Summary',
@@ -38,32 +36,15 @@ const reportTypes = [{
   color: 'bg-orange-500'
 }];
 export const PSBReports: React.FC = () => {
-  const [analytics, setAnalytics] = useState<PSBAnalytics | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { analytics, loading, refreshAnalytics } = usePSBAnalytics();
   const [selectedReport, setSelectedReport] = useState('summary');
   const [dateRange, setDateRange] = useState<{
     from: Date;
     to: Date;
   } | undefined>();
-  const fetchAnalytics = async () => {
-    try {
-      setLoading(true);
-      const response = await psbApi.getAnalytics();
-      if (response.success) {
-        setAnalytics(response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching analytics:', error);
-      toast.error('Gagal memuat data analytics');
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    fetchAnalytics();
-  }, []);
   const handleExportReport = (reportType: string) => {
-    toast.success(`Export laporan ${reportType} akan segera dimulai`);
+    // toast.success(`Export laporan ${reportType} akan segera dimulai`);
+    console.log(`Export laporan ${reportType} akan segera dimulai`);
   };
   const generateTrendData = () => {
     if (!analytics) return [];

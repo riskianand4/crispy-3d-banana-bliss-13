@@ -1,6 +1,7 @@
 import { apiClient } from './apiClient';
 import { PSBOrder, PSBAnalytics, CreatePSBOrderRequest } from '@/types/psb';
 import { API_ENDPOINTS } from '@/config/environment';
+import { globalRequestThrottler } from '@/utils/requestThrottler';
 
 export const psbApi = {
   // Get all PSB orders with pagination and filters
@@ -12,7 +13,20 @@ export const psbApi = {
     status?: string;
     search?: string;
   }): Promise<{ success: boolean; data: PSBOrder[]; pagination?: any }> => {
+    const endpoint = API_ENDPOINTS.PSB.ORDERS;
+    
+    if (!globalRequestThrottler.canMakeRequest(endpoint)) {
+      console.warn('🚫 PSB Orders request throttled');
+      return {
+        success: true,
+        data: [],
+        pagination: { page: 1, limit: 10, total: 0, pages: 0 }
+      };
+    }
+
     try {
+      globalRequestThrottler.recordRequest(endpoint);
+      
       const queryParams = new URLSearchParams();
       if (params) {
         Object.entries(params).forEach(([key, value]) => {
@@ -21,7 +35,7 @@ export const psbApi = {
           }
         });
       }
-      const url = `${API_ENDPOINTS.PSB.ORDERS}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      const url = `${endpoint}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
       console.log('PSB API: Fetching orders from:', url);
       const response = await apiClient.get(url);
       console.log('PSB API: Orders response:', response.data);
@@ -39,9 +53,32 @@ export const psbApi = {
 
   // Get PSB analytics
   getAnalytics: async (): Promise<{ success: boolean; data: PSBAnalytics }> => {
+    const endpoint = API_ENDPOINTS.PSB.ANALYTICS;
+    
+    if (!globalRequestThrottler.canMakeRequest(endpoint)) {
+      console.warn('🚫 PSB Analytics request throttled, returning cached fallback');
+      return {
+        success: true,
+        data: {
+          summary: {
+            totalOrders: 0,
+            completedOrders: 0,
+            pendingOrders: 0,
+            inProgressOrders: 0,
+            completionRate: '0'
+          },
+          clusterStats: [],
+          stoStats: [],
+          monthlyTrends: []
+        }
+      };
+    }
+
     try {
-      console.log('PSB API: Fetching analytics from:', API_ENDPOINTS.PSB.ANALYTICS);
-      const response = await apiClient.get(API_ENDPOINTS.PSB.ANALYTICS);
+      globalRequestThrottler.recordRequest(endpoint);
+      
+      console.log('PSB API: Fetching analytics from:', endpoint);
+      const response = await apiClient.get(endpoint);
       console.log('PSB API: Analytics response:', response.data);
       return response.data as { success: boolean; data: PSBAnalytics };
     } catch (error) {

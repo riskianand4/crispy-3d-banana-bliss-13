@@ -37,16 +37,21 @@ export const usePSBData = () => {
       setLoading(true);
       setError(null);
       const response = await psbApi.getAnalytics();
+      
+      // psbApi.getAnalytics always returns success with fallback data
       if (response.success) {
         setAnalytics(response.data);
         return response;
-      } else {
-        throw new Error('Failed to fetch analytics');
       }
     } catch (error: any) {
       console.error('Error fetching PSB analytics:', error);
       setError(error.message || 'Failed to fetch analytics');
-      toast.error('Gagal memuat data analytics PSB');
+      
+      // Only show toast for actual API failures, not fallback data
+      if (error.message && !error.message.includes('fallback')) {
+        toast.error('Gagal memuat data analytics PSB');
+      }
+      
       // Set empty analytics as fallback
       setAnalytics({
         summary: {
@@ -60,7 +65,7 @@ export const usePSBData = () => {
         stoStats: [],
         monthlyTrends: []
       });
-      return { success: false, data: analytics };
+      return { success: false, data: null };
     } finally {
       setLoading(false);
     }

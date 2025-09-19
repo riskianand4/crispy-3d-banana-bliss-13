@@ -32,28 +32,24 @@ import {
   RadialBar,
   Legend
 } from 'recharts';
-import { usePSBData } from '@/hooks/usePSBData';
+import { usePSBAnalytics } from '@/hooks/usePSBAnalytics';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, Wifi, WifiOff } from 'lucide-react';
 
 export const PSBAnalytics: React.FC = () => {
-  const { analytics, loading, error, fetchAnalytics } = usePSBData();
+  const { analytics, loading, error, refreshAnalytics } = usePSBAnalytics();
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'checking'>('checking');
 
   useEffect(() => {
-    // Check connection status and fetch analytics
-    const initializeData = async () => {
+    // Check connection status
+    if (analytics) {
+      setConnectionStatus('connected');
+    } else if (error) {
+      setConnectionStatus('disconnected');  
+    } else {
       setConnectionStatus('checking');
-      try {
-        await fetchAnalytics();
-        setConnectionStatus('connected');
-      } catch (error) {
-        setConnectionStatus('disconnected');
-      }
-    };
-    
-    initializeData();
-  }, [fetchAnalytics]);
+    }
+  }, [analytics, error]);
 
   const generatePerformanceData = () => {
     if (!analytics) return [];
@@ -228,7 +224,7 @@ export const PSBAnalytics: React.FC = () => {
           <p className="text-sm text-muted-foreground mb-6">
             Backend server mungkin tidak berjalan atau endpoint /api/psb-orders/analytics tidak dapat diakses
           </p>
-          <Button onClick={fetchAnalytics} className="mt-4">
+          <Button onClick={refreshAnalytics} className="mt-4">
             <RefreshCw className="h-4 w-4 mr-2" />
             Coba Lagi
           </Button>
@@ -255,7 +251,7 @@ export const PSBAnalytics: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button onClick={fetchAnalytics} variant="outline" size="sm">
+          <Button onClick={refreshAnalytics} variant="outline" size="sm">
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh Data
           </Button>
