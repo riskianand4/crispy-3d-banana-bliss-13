@@ -252,50 +252,58 @@ export const PSBReports: React.FC = () => {
         duration: 0.3,
         delay: 0.2
       }} className="grid gap-4 md:grid-cols-4">
-            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+            <Card className="glass hover-lift">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-blue-600 font-medium">Total Orders</p>
-                    <p className="text-2xl font-bold text-blue-700">{analytics.summary.totalOrders}</p>
+                    <p className="text-sm text-muted-foreground font-medium">Total Orders</p>
+                    <p className="text-2xl font-bold text-foreground">{analytics.summary.totalOrders}</p>
                   </div>
-                  <FileText className="h-8 w-8 text-blue-500" />
+                  <div className="w-8 h-8 bg-primary/10 text-primary rounded-lg flex items-center justify-center">
+                    <FileText className="h-5 w-5" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+            <Card className="glass hover-lift">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-green-600 font-medium">Completed</p>
-                    <p className="text-2xl font-bold text-green-700">{analytics.summary.completedOrders}</p>
+                    <p className="text-sm text-muted-foreground font-medium">Completed</p>
+                    <p className="text-2xl font-bold text-foreground">{analytics.summary.completedOrders}</p>
                   </div>
-                  <CheckCircle className="h-8 w-8 text-green-500" />
+                  <div className="w-8 h-8 bg-success/10 text-success rounded-lg flex items-center justify-center">
+                    <CheckCircle className="h-5 w-5" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+            <Card className="glass hover-lift">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-orange-600 font-medium">In Progress</p>
-                    <p className="text-2xl font-bold text-orange-700">{analytics.summary.inProgressOrders}</p>
+                    <p className="text-sm text-muted-foreground font-medium">In Progress</p>
+                    <p className="text-2xl font-bold text-foreground">{analytics.summary.inProgressOrders}</p>
                   </div>
-                  <Clock className="h-8 w-8 text-orange-500" />
+                  <div className="w-8 h-8 bg-warning/10 text-warning rounded-lg flex items-center justify-center">
+                    <Clock className="h-5 w-5" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+            <Card className="glass hover-lift">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-purple-600 font-medium">Success Rate</p>
-                    <p className="text-2xl font-bold text-purple-700">{analytics.summary.completionRate}%</p>
+                    <p className="text-sm text-muted-foreground font-medium">Success Rate</p>
+                    <p className="text-2xl font-bold text-foreground">{analytics.summary.completionRate}%</p>
                   </div>
-                  <TrendingUp className="h-8 w-8 text-purple-500" />
+                  <div className="w-8 h-8 bg-accent/10 text-accent rounded-lg flex items-center justify-center">
+                    <TrendingUp className="h-5 w-5" />
+                  </div>
                 </div>
               </CardContent>
             </Card>

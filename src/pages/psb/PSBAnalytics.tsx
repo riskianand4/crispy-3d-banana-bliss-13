@@ -269,81 +269,81 @@ export const PSBAnalytics: React.FC = () => {
         transition={{ duration: 0.3, delay: 0.1 }}
         className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
       >
-        <Card className="bg-gradient-to-br from-blue-50 via-blue-50 to-blue-100 border-blue-200 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500/10 rounded-full -translate-y-4 translate-x-4"></div>
+        <Card className="glass hover-lift relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-primary/10 rounded-full -translate-y-4 translate-x-4"></div>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-blue-600 font-medium mb-1">Total Orders</p>
-                <p className="text-3xl font-bold text-blue-700">{analytics.summary.totalOrders}</p>
+                <p className="text-sm text-muted-foreground font-medium mb-1">Total Orders</p>
+                <p className="text-3xl font-bold text-foreground">{analytics.summary.totalOrders}</p>
                 <div className="flex items-center gap-1 mt-2">
-                  <ArrowUp className="h-3 w-3 text-green-600" />
-                  <span className="text-xs text-green-600 font-medium">+12.5%</span>
+                  <ArrowUp className="h-3 w-3 text-success" />
+                  <span className="text-xs text-success font-medium">+12.5%</span>
                   <span className="text-xs text-muted-foreground">vs last month</span>
                 </div>
               </div>
-              <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
-                <Activity className="h-6 w-6 text-white" />
+              <div className="w-12 h-12 bg-primary text-primary-foreground rounded-xl flex items-center justify-center">
+                <Activity className="h-6 w-6" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-50 via-green-50 to-green-100 border-green-200 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-20 h-20 bg-green-500/10 rounded-full -translate-y-4 translate-x-4"></div>
+        <Card className="glass hover-lift relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-success/10 rounded-full -translate-y-4 translate-x-4"></div>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-green-600 font-medium mb-1">Success Rate</p>
-                <p className="text-3xl font-bold text-green-700">{analytics.summary.completionRate}%</p>
+                <p className="text-sm text-muted-foreground font-medium mb-1">Success Rate</p>
+                <p className="text-3xl font-bold text-foreground">{analytics.summary.completionRate}%</p>
                 <div className="flex items-center gap-1 mt-2">
-                  <ArrowUp className="h-3 w-3 text-green-600" />
-                  <span className="text-xs text-green-600 font-medium">+3.2%</span>
+                  <ArrowUp className="h-3 w-3 text-success" />
+                  <span className="text-xs text-success font-medium">+3.2%</span>
                   <span className="text-xs text-muted-foreground">improvement</span>
                 </div>
               </div>
-              <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
-                <Target className="h-6 w-6 text-white" />
+              <div className="w-12 h-12 bg-success text-success-foreground rounded-xl flex items-center justify-center">
+                <Target className="h-6 w-6" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 via-purple-50 to-purple-100 border-purple-200 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-20 h-20 bg-purple-500/10 rounded-full -translate-y-4 translate-x-4"></div>
+        <Card className="glass hover-lift relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-accent/10 rounded-full -translate-y-4 translate-x-4"></div>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-purple-600 font-medium mb-1">Avg. Completion</p>
-                <p className="text-3xl font-bold text-purple-700">4.2d</p>
+                <p className="text-sm text-muted-foreground font-medium mb-1">Avg. Completion</p>
+                <p className="text-3xl font-bold text-foreground">4.2d</p>
                 <div className="flex items-center gap-1 mt-2">
-                  <ArrowDown className="h-3 w-3 text-green-600" />
-                  <span className="text-xs text-green-600 font-medium">-0.8d</span>
+                  <ArrowDown className="h-3 w-3 text-success" />
+                  <span className="text-xs text-success font-medium">-0.8d</span>
                   <span className="text-xs text-muted-foreground">faster</span>
                 </div>
               </div>
-              <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
-                <Zap className="h-6 w-6 text-white" />
+              <div className="w-12 h-12 bg-accent text-accent-foreground rounded-xl flex items-center justify-center">
+                <Zap className="h-6 w-6" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-orange-50 via-orange-50 to-orange-100 border-orange-200 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-20 h-20 bg-orange-500/10 rounded-full -translate-y-4 translate-x-4"></div>
+        <Card className="glass hover-lift relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-warning/10 rounded-full -translate-y-4 translate-x-4"></div>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-orange-600 font-medium mb-1">Active Clusters</p>
-                <p className="text-3xl font-bold text-orange-700">{analytics.clusterStats.length}</p>
+                <p className="text-sm text-muted-foreground font-medium mb-1">Active Clusters</p>
+                <p className="text-3xl font-bold text-foreground">{analytics.clusterStats.length}</p>
                 <div className="flex items-center gap-1 mt-2">
-                  <ArrowUp className="h-3 w-3 text-green-600" />
-                  <span className="text-xs text-green-600 font-medium">+2</span>
+                  <ArrowUp className="h-3 w-3 text-success" />
+                  <span className="text-xs text-success font-medium">+2</span>
                   <span className="text-xs text-muted-foreground">new clusters</span>
                 </div>
               </div>
-              <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
-                <BarChart3 className="h-6 w-6 text-white" />
+              <div className="w-12 h-12 bg-warning text-warning-foreground rounded-xl flex items-center justify-center">
+                <BarChart3 className="h-6 w-6" />
               </div>
             </div>
           </CardContent>
