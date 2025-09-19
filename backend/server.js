@@ -36,13 +36,26 @@ const errorHandler = require("./middleware/errorHandler");
 const { standardErrorHandler } = require("./middleware/standardErrorHandler");
 const { connectWithRetry } = require("./config/database");
 const { performanceMiddleware } = require("./middleware/performanceOptimizer"); // OPTIMIZED
-const { securityHeaders, sanitizeRequest, suspiciousActivityDetector } = require("./middleware/enhancedSecurity");
-const { applyEndpointRateLimit, progressiveSlowdown } = require("./middleware/strictRateLimiting");
+const {
+  securityHeaders,
+  sanitizeRequest,
+  suspiciousActivityDetector,
+} = require("./middleware/enhancedSecurity");
+const {
+  applyEndpointRateLimit,
+  progressiveSlowdown,
+} = require("./middleware/strictRateLimiting");
 const healthRoutes = require("./routes/health");
 const { apiKeyAuth, apiKeyRateLimit } = require("./middleware/apiKeyAuth");
 const { auth, superAdminAuth } = require("./middleware/auth");
-const { monitorApiUsage, checkBlocked } = require("./middleware/securityMonitor");
-const { logAdminActivity, activityLoggers } = require("./middleware/activityLogger");
+const {
+  monitorApiUsage,
+  checkBlocked,
+} = require("./middleware/securityMonitor");
+const {
+  logAdminActivity,
+  activityLoggers,
+} = require("./middleware/activityLogger");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -57,32 +70,34 @@ app.use(performanceMiddleware);
 app.use(securityHeaders);
 app.use(sanitizeRequest);
 
-
 // Apply rate limiting (progressive slowdown disabled for performance)
 app.use((req, res, next) => {
   // Skip rate limiting for health checks
   if (req.path === "/health" || req.path === "/api/health") {
-    return next(); 
+    return next();
   }
+  if (req.path.startsWith("/api/psb-orders/analytics")) {
+    return next();
+  }
+
   return applyEndpointRateLimit(req, res, next);
 });
 
 // Secure CORS configuration
 const getAllowedOrigins = () => {
   const corsOrigin = process.env.CORS_ORIGIN;
-  if (corsOrigin === '*' && process.env.NODE_ENV === 'production') {
+  if (corsOrigin === "*" && process.env.NODE_ENV === "production") {
     console.error('CRITICAL: CORS_ORIGIN cannot be "*" in production');
     process.exit(1);
   }
-  
-  if (corsOrigin === '*') {
-    return '*'; // Only allowed in development
+
+  if (corsOrigin === "*") {
+    return "*"; // Only allowed in development
   }
-  
-  return corsOrigin ? corsOrigin.split(',').map(origin => origin.trim()) : [
-    'http://localhost:8080',
-    'http://103.169.41.9:80',
-  ];
+
+  return corsOrigin
+    ? corsOrigin.split(",").map((origin) => origin.trim())
+    : ["http://localhost:8080", "http://103.169.41.9:80"];
 };
 
 app.use(
@@ -91,12 +106,8 @@ app.use(
     origin: "*",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: [
-      "Content-Type", 
-      "Authorization", 
-      "x-api-key"
-    ],
-    optionsSuccessStatus: 200
+    allowedHeaders: ["Content-Type", "Authorization", "x-api-key"],
+    optionsSuccessStatus: 200,
   })
 );
 
@@ -108,7 +119,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 // Static file serving for assets
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use("/assets", express.static(path.join(__dirname, "assets")));
 
 // Security monitoring and input validation
 app.use(checkBlocked);
@@ -141,30 +152,79 @@ app.use("/api/email-verification", emailVerificationRoutes);
 
 // Regular routes - require JWT authentication only - OPTIMIZED
 app.use("/api/products", auth, activityLoggers.productAccess, productRoutes);
-app.use("/api/stock", auth, logAdminActivity('Accessed stock management'), stockRoutes);
-app.use("/api/assets", auth, logAdminActivity('Accessed asset management'), assetRoutes);
+app.use(
+  "/api/stock",
+  auth,
+  logAdminActivity("Accessed stock management"),
+  stockRoutes
+);
+app.use(
+  "/api/assets",
+  auth,
+  logAdminActivity("Accessed asset management"),
+  assetRoutes
+);
 // app.use("/api/users", activityLoggers.userAccess, require("./routes/optimized/usersOptimized")); // OPTIMIZED
 app.use("/api/users", activityLoggers.userAccess, require("./routes/users"));
-app.use("/api/analytics", auth, logAdminActivity('Accessed analytics'), require("./routes/optimized/analyticsOptimized")); // OPTIMIZED
-app.use("/api/reports", auth, logAdminActivity('Accessed reports'), reportRoutes);
+app.use(
+  "/api/analytics",
+  auth,
+  logAdminActivity("Accessed analytics"),
+  require("./routes/optimized/analyticsOptimized")
+); // OPTIMIZED
+app.use(
+  "/api/reports",
+  auth,
+  logAdminActivity("Accessed reports"),
+  reportRoutes
+);
 
-app.use("/api/alerts", auth, logAdminActivity('Accessed alerts'), alertRoutes);
-app.use("/api/suppliers", auth, logAdminActivity('Accessed supplier management'), supplierRoutes);
-app.use("/api/customers", auth, logAdminActivity('Accessed customer management'), customerRoutes);
-app.use("/api/orders", auth, logAdminActivity('Accessed order management'), orderRoutes);
-app.use("/api/psb-orders", auth, logAdminActivity('Accessed PSB orders'), psbOrderRoutes);
+app.use("/api/alerts", auth, logAdminActivity("Accessed alerts"), alertRoutes);
+app.use(
+  "/api/suppliers",
+  auth,
+  logAdminActivity("Accessed supplier management"),
+  supplierRoutes
+);
+app.use(
+  "/api/customers",
+  auth,
+  logAdminActivity("Accessed customer management"),
+  customerRoutes
+);
+app.use(
+  "/api/orders",
+  auth,
+  logAdminActivity("Accessed order management"),
+  orderRoutes
+);
+app.use(
+  "/api/psb-orders",
+  auth,
+  logAdminActivity("Accessed PSB orders"),
+  psbOrderRoutes
+);
 app.use("/api/monitoring", monitoringRoutes);
 app.use("/api/performance", require("./routes/performanceMonitor")); // Performance monitoring
 
-// Admin routes - require JWT super admin authentication  
-app.use("/api/admin/api-keys", superAdminAuth, activityLoggers.apiKeyAccess, apiKeyRoutes);
+// Admin routes - require JWT super admin authentication
+app.use(
+  "/api/admin/api-keys",
+  superAdminAuth,
+  activityLoggers.apiKeyAccess,
+  apiKeyRoutes
+);
 
 // Super Admin routes - require super admin privileges - OPTIMIZED
 app.use("/api/security", activityLoggers.securityAccess, securityRoutes);
 app.use("/api/system/config", activityLoggers.systemAccess, systemConfigRoutes);
-app.use("/api/system", activityLoggers.systemAccess, require("./routes/optimized/systemHealthOptimized")); // OPTIMIZED
+app.use(
+  "/api/system",
+  activityLoggers.systemAccess,
+  require("./routes/optimized/systemHealthOptimized")
+); // OPTIMIZED
 
-// External admin routes - require API key for external access  
+// External admin routes - require API key for external access
 app.use(
   "/api/external/admin/api-keys",
   apiKeyAuth(["admin"]),

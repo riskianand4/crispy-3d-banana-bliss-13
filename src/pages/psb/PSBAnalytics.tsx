@@ -161,8 +161,8 @@ export const PSBAnalytics: React.FC = () => {
       </div>;
   }
   if (!analytics && !loading) {
-    return <div className="space-y-6">
-        <Alert className="border-yellow-200 bg-yellow-50">
+    return <div className="space-y-6 sm:p-6 p-6">
+        <Alert className="border-yellow-300 bg-primary/10"> 
           <AlertCircle className="h-4 w-4 text-yellow-600" />
           <AlertDescription className="text-yellow-800">
             <div className="flex items-center justify-between">

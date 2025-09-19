@@ -99,8 +99,8 @@ export const PSBCustomers: React.FC = () => {
   // Show error state with fallback UI
   if (error && customers.length === 0) {
     return (
-      <div className="space-y-6 p-4 sm:p-6 max-w-full overflow-x-hidden">
-        <Alert className="border-yellow-200 bg-yellow-50">
+      <div className="space-y-6 p-6 sm:p-6 max-w-full overflow-x-hidden">
+        <Alert className="border-yellow-300 bg-primary/10">
           <AlertCircle className="h-4 w-4 text-yellow-600" />
           <AlertDescription className="text-yellow-800">
             <div className="flex items-center justify-between">

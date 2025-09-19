@@ -10,7 +10,7 @@ class AnalyticsManager {
   private loading = false;
   private error: string | null = null;
   private lastFetch = 0;
-  private cacheDuration = 30000; // 30 seconds
+  private cacheDuration = 500000; // 5 menit
   private subscribers = new Set<() => void>();
   private activeRequest: Promise<any> | null = null;
 
@@ -155,7 +155,7 @@ export const usePSBAnalytics = () => {
     if (!state.analytics && !state.loading) {
       fetchAnalytics();
     }
-  }, [fetchAnalytics, state.analytics, state.loading]);
+  }, []);
 
   return {
     analytics: state.analytics,
