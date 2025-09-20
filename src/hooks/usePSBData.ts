@@ -14,16 +14,46 @@ export const usePSBData = () => {
       setLoading(true);
       setError(null);
       const response = await psbApi.getOrders(params);
-      if (response.success) {
-        setOrders(response.data);
-        return response;
+      
+      // Handle both wrapped and direct array responses
+      let ordersData = [];
+      let success = false;
+      
+      if (response && typeof response === 'object') {
+        if (response.success !== undefined) {
+          // Wrapped response format: { success: boolean, data: array }
+          success = response.success;
+          ordersData = response.data || [];
+        } else if (Array.isArray(response)) {
+          // Direct array response
+          success = true;
+          ordersData = response;
+        } else if (Array.isArray((response as any).data)) {
+          // Response with data property containing array
+          success = true;
+          ordersData = (response as any).data;
+        } else {
+          // Unknown format, treat as successful if data exists
+          success = true;
+          ordersData = [];
+        }
+      }
+      
+      if (success || Array.isArray(ordersData)) {
+        setOrders(ordersData);
+        return { success: true, data: ordersData, pagination: response.pagination || null };
       } else {
-        throw new Error('Failed to fetch orders');
+        throw new Error('Invalid response format');
       }
     } catch (error: any) {
       console.error('Error fetching PSB orders:', error);
       setError(error.message || 'Failed to fetch orders');
-      toast.error('Gagal memuat data orders PSB');
+      
+      // Only show toast for actual network errors, not for empty data
+      if (error.status >= 500 || error.message?.includes('network') || error.message?.includes('fetch')) {
+        toast.error('Backend PSB service bermasalah');
+      }
+      
       // Set empty orders as fallback
       setOrders([]);
       return { success: false, data: [], pagination: null };

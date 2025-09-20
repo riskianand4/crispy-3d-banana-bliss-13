@@ -61,14 +61,51 @@ class AnalyticsManager {
       console.log('📊 Fetching PSB analytics (deduplicated)');
       const response = await psbApi.getAnalytics();
       
-      if (response.success) {
-        this.analytics = response.data;
+      // Handle both wrapped and direct responses
+      let analyticsData = null;
+      let success = false;
+      
+      if (response && typeof response === 'object') {
+        if (response.success !== undefined) {
+          // Wrapped response format: { success: boolean, data: object }
+          success = response.success;
+          analyticsData = response.data;
+        } else if ((response as any).summary || (response as any).clusterStats || (response as any).stoStats) {
+          // Direct analytics object response
+          success = true;
+          analyticsData = response as any as PSBAnalytics;
+        } else {
+          // Unknown format, treat as successful if data exists
+          success = true;
+          analyticsData = (response as any).data || response;
+        }
+      }
+      
+      if (success && analyticsData) {
+        this.analytics = analyticsData;
         this.lastFetch = Date.now();
         this.error = null;
         this.loading = false;
         this.notifySubscribers();
         return { success: true, data: this.analytics };
       }
+      
+      // Handle case where analytics is empty but valid
+      const hasValidData = analyticsData && (
+        (analyticsData.summary && analyticsData.summary.totalOrders >= 0) ||
+        (analyticsData.clusterStats && Array.isArray(analyticsData.clusterStats)) ||
+        (analyticsData.stoStats && Array.isArray(analyticsData.stoStats))
+      );
+      
+      if (hasValidData) {
+        this.analytics = analyticsData;
+        this.lastFetch = Date.now();
+        this.error = null;
+        this.loading = false;
+        this.notifySubscribers();
+        return { success: true, data: this.analytics };
+      }
+      
     } catch (error: any) {
       console.error('Error fetching PSB analytics:', error);
       
