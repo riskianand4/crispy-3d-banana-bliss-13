@@ -5,6 +5,8 @@ const Product = require("../models/Product");
 const StockMovement = require("../models/StockMovement");
 const Asset = require("../models/Asset");
 const ApiKey = require("../models/ApiKey");
+const PSBOrder = require("../models/PSBOrder");
+const { seedPSBOrders } = require("./seedPSBOrders");
 require("dotenv").config();
 
 const connectDB = async () => {
@@ -399,6 +401,7 @@ const seedDatabase = async () => {
       StockMovement.deleteMany({}),
       Asset.deleteMany({}),
       ApiKey.deleteMany({}),
+      PSBOrder.deleteMany({}),
     ]);
     console.log("Existing data cleared");
 
@@ -408,6 +411,7 @@ const seedDatabase = async () => {
     const movements = await seedStockMovements(products, users);
     const assets = await seedAssets(users);
     const apiKeys = await seedApiKeys(users);
+    const psbOrders = await seedPSBOrders(users);
     
     // Seed admin activities after users are created
     await seedAdminActivities();
@@ -418,6 +422,7 @@ const seedDatabase = async () => {
     console.log(`Stock Movements: ${movements.length}`);
     console.log(`Assets: ${assets.length}`);
     console.log(`API Keys: ${apiKeys.length}`);
+    console.log(`PSB Orders: ${psbOrders.length}`);
     console.log("========================");
 
     console.log("\n=== LOGIN CREDENTIALS ===");

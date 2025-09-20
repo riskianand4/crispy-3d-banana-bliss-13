@@ -55,6 +55,25 @@ export const PSBReports: React.FC = () => {
       pending: trend.count - trend.completed
     }));
   };
+  const handleGenerateSampleData = async () => {
+    try {
+      const response = await fetch('/api/psb-orders/generate-sample', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (response.ok) {
+        await refreshAnalytics();
+        console.log('Sample data generated successfully');
+      }
+    } catch (error) {
+      console.error('Failed to generate sample data:', error);
+    }
+  };
+
   if (loading) {
     return <div className="space-y-6">
         {/* Header Skeleton */}
@@ -240,7 +259,42 @@ export const PSBReports: React.FC = () => {
         </motion.div>
       </TooltipProvider>
 
-      {analytics && <>
+      {/* Empty State for No Data */}
+      {analytics && analytics.summary.totalOrders === 0 ? (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="text-center py-12"
+        >
+          <Card className="max-w-2xl mx-auto">
+            <CardContent className="p-8">
+              <div className="space-y-6">
+                <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center">
+                  <FileText className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">Belum Ada Data PSB</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Sistem belum memiliki data order PSB. Mulai dengan menambahkan data sample untuk melihat analytics.
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button onClick={handleGenerateSampleData} className="flex items-center gap-2">
+                    <Package className="h-4 w-4" />
+                    Generate Sample Data
+                  </Button>
+                  <Button variant="outline" onClick={() => window.location.href = '/psb-input'}>
+                    <FileText className="h-4 w-4 mr-2" />
+                    Tambah Data Manual
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      ) : analytics && analytics.summary.totalOrders > 0 ? (
+        <>
           {/* Summary Stats */}
           <motion.div initial={{
         opacity: 0,
@@ -479,6 +533,37 @@ export const PSBReports: React.FC = () => {
               </CardContent>
             </Card>
           </motion.div>
-        </>}
+        </>
+      ) : (
+        /* Connection Error State */
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="text-center py-12"
+        >
+          <Card className="max-w-2xl mx-auto border-destructive/50">
+            <CardContent className="p-8">
+              <div className="space-y-6">
+                <div className="w-16 h-16 mx-auto bg-destructive/10 rounded-full flex items-center justify-center">
+                  <FileText className="h-8 w-8 text-destructive" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2 text-destructive">Koneksi Backend Bermasalah</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Backend PSB service tidak dapat dijangkau. Menampilkan mode offline.
+                  </p>
+                </div>
+                <div className="flex gap-3 justify-center">
+                  <Button onClick={refreshAnalytics} variant="outline">
+                    <Clock className="h-4 w-4 mr-2" />
+                    Coba Lagi
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
     </div>;
 };

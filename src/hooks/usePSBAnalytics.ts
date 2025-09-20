@@ -71,14 +71,26 @@ class AnalyticsManager {
       }
     } catch (error: any) {
       console.error('Error fetching PSB analytics:', error);
-      this.error = error.message || 'Failed to fetch analytics';
       
-      // Only show toast for actual network errors, not rate limits
-      if (error.status !== 429 && !error.message?.includes('Rate limit')) {
-        toast.error('Gagal memuat data analytics PSB');
+      // Distinguish between network errors and empty data
+      const isNetworkError = error.status >= 500 || error.message?.includes('network') || error.message?.includes('fetch');
+      const isEmpty = error.status === 200 && (!this.analytics || this.analytics.summary.totalOrders === 0);
+      
+      if (isNetworkError) {
+        this.error = 'Backend PSB service tidak dapat dijangkau';
+        toast.error('Backend PSB service bermasalah');
+      } else if (isEmpty) {
+        this.error = 'no_data';
+      } else {
+        this.error = error.message || 'Failed to fetch analytics';
       }
       
-      // Set fallback data
+      // Only show network error toasts, not for empty data or rate limits
+      if (isNetworkError && error.status !== 429 && !error.message?.includes('Rate limit')) {
+        // Already shown above
+      }
+      
+      // Set fallback data for empty state
       this.analytics = {
         summary: {
           totalOrders: 0,

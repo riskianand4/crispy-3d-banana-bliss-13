@@ -217,4 +217,49 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
+// Generate sample PSB orders for testing
+router.post('/generate-sample', auth, async (req, res) => {
+  try {
+    // Only allow super_admin to generate sample data
+    if (req.user.role !== 'super_admin') {
+      return res.status(403).json({
+        success: false,
+        error: 'Only super admin can generate sample data'
+      });
+    }
+
+    const { seedPSBOrders } = require('../seeds/seedPSBOrders');
+    const User = require('../models/User');
+    
+    // Get users for seeding
+    const users = await User.find();
+    if (users.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'No users found. Please seed users first.'
+      });
+    }
+
+    // Clear existing PSB orders
+    await PSBOrder.deleteMany({});
+    
+    // Generate new sample data
+    const orders = await seedPSBOrders(users);
+
+    res.json({
+      success: true,
+      message: `Generated ${orders.length} sample PSB orders`,
+      data: {
+        count: orders.length
+      }
+    });
+  } catch (error) {
+    console.error('Error generating sample PSB orders:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to generate sample data'
+    });
+  }
+});
+
 module.exports = router;
